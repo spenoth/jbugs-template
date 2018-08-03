@@ -20,8 +20,8 @@ public class Role extends BaseEntity<Long> {
     private List<Permission> permissions;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "rid"),
-            inverseJoinColumns = { @JoinColumn(name = "uid")})
+//    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "rid"),
+//            inverseJoinColumns = { @JoinColumn(name = "uid")})
     private List<User> users;
 
     public Role() {
