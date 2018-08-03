@@ -27,7 +27,7 @@ public class UserDTOHelper {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
-        user.setPassword(Encryptor.encrypt(dto.getPassword()));
+        user.setPassword(dto.getPassword());
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setUsername(dto.getUsername());
 
