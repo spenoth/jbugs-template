@@ -4,21 +4,45 @@ import ro.msg.edu.jbugs.usermanagement.persistance.entity.Role;
 import ro.msg.edu.jbugs.usermanagement.persistance.entity.User;
 
 import javax.ejb.Remote;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
-@Remote
+
+/**\
+ * Provides functions to manage users enities.
+ */
 public interface UserPersistanceManagement extends Serializable {
 
-    void addUser(User user);
+    /**
+     * Persists user into db.
+     * @param user
+     * @return the created user
+     */
+    User createUser(@NotNull User user);
 
-    User updateUser(User user);
+    /**
+     * Updates a user from the db
+     * @param user
+     * @return the newuser
+     */
+    User updateUser(@NotNull User user);
 
+    /**
+     * Return a List with all users
+     * @return the list with user objects
+     */
     List<User> getAllUsers();
 
-    User getUserForUsername(String username);
+    /**
+     *
+     * @param username
+     * @return
+     */
+    User getUserByUsername(String username);
 
-    void addRole(Role role);
+    void createRole(Role role);
 
     void removeRole(Role role);
 
@@ -28,7 +52,9 @@ public interface UserPersistanceManagement extends Serializable {
 
     List<Role> getAllRoles();
 
-    List<User>getUserByEmail(String email);
+    List<User>getUserByEmail(@NotNull String email);
 
-    List<String>getUsersWithUsernameStartingWith(String username);
+    Optional<User> getUserByEmail2(@NotNull String email);
+
+    List<String> getUsernamesLike(@NotNull String username);
 }

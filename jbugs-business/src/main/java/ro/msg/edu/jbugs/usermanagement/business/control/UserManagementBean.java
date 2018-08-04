@@ -43,7 +43,7 @@ public class UserManagementBean implements UserManagement {
         user.setStatus(true);
         user.setUsername(generateFullUsername(userDTO.getFirstName(), userDTO.getLastName()));
         user.setPassword(Encryptor.encrypt(userDTO.getPassword()));
-        userPersistance.addUser(user);
+        userPersistance.createUser(user);
         return UserDTOHelper.fromEntity(user);
     }
 
@@ -52,7 +52,7 @@ public class UserManagementBean implements UserManagement {
             throw new BuisnissException(ExceptionCode.USER_VALIDATION_EXCEPTION);
         }
         // Validate if email already exists.
-        if (!userPersistance.getUserByEmail(userDTO.getEmail()).isEmpty()) {
+        if (userPersistance.getUserByEmail2(userDTO.getEmail()).isPresent()) {
             throw new BuisnissException(ExceptionCode.EMAIL_EXISTS_ALLREADY);
         }
     }
@@ -70,7 +70,7 @@ public class UserManagementBean implements UserManagement {
      * @return
      */
     protected String createSuffix(String username) {
-        List<String> usernameLike = userPersistance.getUsersWithUsernameStartingWith(username);
+        List<String> usernameLike = userPersistance.getUsernamesLike(username);
         Optional<Integer> max = usernameLike
                 .stream()
                 .map(x -> x.substring(MIN_USERNAME_LENGTH, x.length()))
@@ -116,28 +116,28 @@ public class UserManagementBean implements UserManagement {
             return matcher.find();
     }
 
-    private boolean isValidPhoneNumber(String phoneNumber) {
+    protected boolean isValidPhoneNumber(String phoneNumber) {
         // TODO: To be continued ... /^0[\d]{3}-[\d]{3}-[\d]{3}$/
-//        final Pattern VALID_GERMANY_PHONE_REGEX =
-//                Pattern.compile("(^\\+49)|(^01[5-7][1-9])", Pattern.CASE_INSENSITIVE);
-//        final Pattern VALID_ROMANIA_PHONE_REGEX =
-//                Pattern.compile("^\\d{3}-\\d{3}-\\d{4}$", Pattern.CASE_INSENSITIVE);
+//       final Pattern VALID_GERMANY_PHONE_REGEX =
+//                Pattern.compile("[0-9]*\\/*(\\+49)*[ ]*(\\([0-9]+\\))*([ ]*(-)*[ ]*[0-9]+)*", Pattern.CASE_INSENSITIVE);
+        final Pattern VALID_ROMANIA_PHONE_REGEX =
+                Pattern.compile("(^\\+407|^07|^\\+402|^02)([0-9]{8})", Pattern.CASE_INSENSITIVE);
 //        Matcher matcherGermany = VALID_GERMANY_PHONE_REGEX .matcher(phoneNumber);
-//        Matcher matcherRomania = VALID_ROMANIA_PHONE_REGEX .matcher(phoneNumber);
-//        return matcherGermany.find() || matcherRomania.find();
-        return true;
+        Matcher matcherRomania = VALID_ROMANIA_PHONE_REGEX .matcher(phoneNumber);
+        return /*matcherGermany.find() ||*/ matcherRomania.find();
+        //return true;
     }
 
     @Override
     public void deactivateUser(String username) {
-        User user = userPersistance.getUserForUsername(username);
+        User user = userPersistance.getUserByUsername(username);
         user.setStatus(false);
         userPersistance.updateUser(user);
     }
 
     @Override
     public void activateUser(String username) {
-        User user = userPersistance.getUserForUsername(username);
+        User user = userPersistance.getUserByUsername(username);
         user.setStatus(true);
         userPersistance.updateUser(user);
     }
@@ -154,7 +154,7 @@ public class UserManagementBean implements UserManagement {
 
     @Override
     public UserDTO login(String username, String password) throws BuisnissException {
-        User user = userPersistance.getUserForUsername(username);
+        User user = userPersistance.getUserByUsername(username);
         if(user == null)
             throw new BuisnissException(ExceptionCode.USERNAME_NOT_VALID);
         if(!Encryptor.encrypt(password).equals(user.getPassword())) {

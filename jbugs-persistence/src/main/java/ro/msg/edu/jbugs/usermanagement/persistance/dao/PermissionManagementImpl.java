@@ -13,7 +13,7 @@ import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 
-@Stateless(name = "PermissionManagementImpl", mappedName = "PermissionManagementImpl")
+@Stateless
 public class PermissionManagementImpl implements PermissionManagement {
 
     private static final Logger logger = LogManager.getLogger(PermissionManagementImpl.class);
@@ -23,7 +23,7 @@ public class PermissionManagementImpl implements PermissionManagement {
 
     @Override
     public Permission addPermission(Permission permission) {
-        logger.log(Level.ERROR,"aaaaaaaaaaa");
+        logger.log(Level.ERROR,"Cant add permission");
         em.persist(permission);
         return permission;
     }

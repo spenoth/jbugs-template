@@ -4,12 +4,12 @@ import ro.msg.edu.jbugs.usermanagement.persistance.entity.Role;
 import ro.msg.edu.jbugs.usermanagement.persistance.entity.User;
 
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
-@Stateless(name = "UserManagementImpl", mappedName = "UserManagementImpl")
+@Stateless
 public class UserManagementImpl implements UserPersistanceManagement {
 
     private static final long serialVersionUID = 1L;
@@ -18,12 +18,14 @@ public class UserManagementImpl implements UserPersistanceManagement {
     private EntityManager em;
 
     @Override
-    public void addUser(User user) {
-        em.persist(user);
+    public User createUser(User user) {
+         em.persist(user);
+         em.flush();
+         return user;
     }
 
     @Override
-    public User updateUser(User user) {
+    public User updateUser(@NotNull User user) {
         return em.merge(user);
     }
 
@@ -34,14 +36,18 @@ public class UserManagementImpl implements UserPersistanceManagement {
     }
 
     @Override
-    public User getUserForUsername(String username) {
+    public User getUserByUsername(@NotNull String username) {
         Query q = em.createQuery("SELECT u FROM User u WHERE u.username='"
             + username + "'");
-        return (User) q.getSingleResult();
+        try {
+            return (User) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
-    public void addRole(Role role) {
+    public void createRole(Role role) {
         em.persist(role);
     }
 
@@ -76,7 +82,18 @@ public class UserManagementImpl implements UserPersistanceManagement {
     }
 
     @Override
-    public List<String> getUsersWithUsernameStartingWith(String username) {
+    public Optional<User> getUserByEmail2(String email) {
+
+        TypedQuery<User> q = em.createQuery("SELECT u from User WHERE u.email = '" + email + "'", User.class);
+        try {
+            return Optional.of(q.getSingleResult());
+        } catch (NoResultException ex) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<String> getUsernamesLike(String username) {
         Query q = em.createQuery("SELECT U.username FROM User u WHERE u.username LIKE '"+username+"%' ORDER BY u.username DESC");
         return q.getResultList();
     }

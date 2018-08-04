@@ -2,7 +2,6 @@ package ro.msg.edu.jbugs.usermanagement.business.control;
 
 import ro.msg.edu.jbugs.usermanagement.business.exception.BuisnissException;
 import ro.msg.edu.jbugs.usermanagement.business.exception.ExceptionCode;
-import ro.msg.edu.jbugs.usermanagement.business.control.UserManagementBean;
 import ro.msg.edu.jbugs.usermanagement.persistance.dao.UserPersistanceManagement;
 import ro.msg.edu.jbugs.usermanagement.persistance.entity.User;
 import ro.msg.edu.jbugs.usermanagement.business.dto.UserDTO;
@@ -14,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -55,14 +55,14 @@ public class UserManagementBeanTest {
 
     @Test
     public void testCreateSuffix_expectedEmpty() {
-        when(userPersistanceMock.getUsersWithUsernameStartingWith(any(String.class))).thenReturn(new ArrayList<>());
+        when(userPersistanceMock.getUsernamesLike(any(String.class))).thenReturn(new ArrayList<>());
         String suffix = userManagementMock.createSuffix("dorel0");
         assertEquals(suffix, "");
     }
 
     @Test
     public void testCreateSuffix_expected4() {
-        when(userPersistanceMock.getUsersWithUsernameStartingWith(any(String.class))).thenReturn(new ArrayList<String>() {{
+        when(userPersistanceMock.getUsernamesLike(any(String.class))).thenReturn(new ArrayList<String>() {{
             add("dorel0");
             add("dorel01");
             add("dorel02");
@@ -74,7 +74,7 @@ public class UserManagementBeanTest {
 
     @Test
     public void testCreateSuffix_expected7() {
-        when(userPersistanceMock.getUsersWithUsernameStartingWith(any(String.class))).thenReturn(new ArrayList<String>() {{
+        when(userPersistanceMock.getUsernamesLike(any(String.class))).thenReturn(new ArrayList<String>() {{
             add("dorel04");
             add("dorel06");
         }});
@@ -84,7 +84,7 @@ public class UserManagementBeanTest {
 
     @Test
     public void testCreateSuffix_expected1() {
-        when(userPersistanceMock.getUsersWithUsernameStartingWith(any(String.class))).thenReturn(new ArrayList<String>() {{
+        when(userPersistanceMock.getUsernamesLike(any(String.class))).thenReturn(new ArrayList<String>() {{
             add("marini");
         }});
         String suffix = userManagementMock.createSuffix("marini");
@@ -93,7 +93,7 @@ public class UserManagementBeanTest {
 
     @Test
     public void testLogin_WrongUsername() {
-        when(userPersistanceMock.getUserForUsername(any(String.class)))
+        when(userPersistanceMock.getUserByUsername(any(String.class)))
                 .thenReturn(null);
         try {
             userManagementMock.login("a", "s");
@@ -108,7 +108,7 @@ public class UserManagementBeanTest {
         User user = mock(User.class);
         when(user.getUsername()).thenReturn("salut");
 
-        when(userPersistanceMock.getUserForUsername(any(String.class)))
+        when(userPersistanceMock.getUserByUsername(any(String.class)))
                 .thenReturn(user);
         try {
             userManagementMock.login("salut", "s");
@@ -124,7 +124,7 @@ public class UserManagementBeanTest {
         when(user.getUsername()).thenReturn("salut");
         when(user.getPassword()).thenReturn(Encryptor.encrypt("secret"));
 
-        when(userPersistanceMock.getUserForUsername(any(String.class)))
+        when(userPersistanceMock.getUserByUsername(any(String.class)))
                 .thenReturn(user);
         try {
             UserDTO userDTO = userManagementMock.login("salut", "secret");
@@ -135,6 +135,69 @@ public class UserManagementBeanTest {
     }
 
     @Test
+    public void testValidatePhoneNumber_invalid1() {
+
+        String invalidPhone = "04235564333";
+        assertFalse(userManagementMock.isValidPhoneNumber(invalidPhone));
+    }
+
+    @Test
+    public void testValidatePhoneNumber_invalid2() {
+
+        String invalidPhone = "+36324543239";
+        assertFalse(userManagementMock.isValidPhoneNumber(invalidPhone));
+    }
+
+    @Test
+    public void testValidatePhoneNumber_invalid3() {
+
+        String invalidPhone = "+87ss91xxsaa";
+        assertFalse(userManagementMock.isValidPhoneNumber(invalidPhone));
+    }
+
+    @Test
+    public void testValidatePhoneNumber_validRo1() {
+        String invalidPhone = "+40745896535";
+        assertTrue(userManagementMock.isValidPhoneNumber(invalidPhone));
+    }
+
+    @Test
+    public void testValidatePhoneNumber_validRo2() {
+        String invalidPhone = "0745896535";
+        assertTrue(userManagementMock.isValidPhoneNumber(invalidPhone));
+    }
+
+    @Test
+    public void testValidatePhoneNumber_validRo3() {
+        String invalidPhone = "0265234543";
+        assertTrue(userManagementMock.isValidPhoneNumber(invalidPhone));
+    }
+
+    @Test
+    public void testValidatePhoneNumber_validRo4() {
+        String invalidPhone = "+40265234543";
+        assertTrue(userManagementMock.isValidPhoneNumber(invalidPhone));
+    }
+
+//    @Test
+//    public void testValidatePhoneNumber_validGe1() {
+//        String invalidPhone = "+491517953677";
+//        assertTrue(userManagementMock.isValidPhoneNumber(invalidPhone));
+//    }
+//
+//    @Test
+//    public void testValidatePhoneNumber_validGe2() {
+//        String invalidPhone = "(06442) 3933923";
+//        assertTrue(userManagementMock.isValidPhoneNumber(invalidPhone));
+//    }
+//
+//    @Test
+//    public void testValidatePhoneNumber_validGe3() {
+//        String invalidPhone = "+4922145911479";
+//        assertTrue(userManagementMock.isValidPhoneNumber(invalidPhone));
+//    }
+
+    @Test
     public void testCreateUser_Success() {
         UserDTO userDTO = new UserDTO();
         userDTO.setFirstName("Cristi");
@@ -142,6 +205,7 @@ public class UserManagementBeanTest {
         userDTO.setEmail("dinamo@msggroup.com");
         userDTO.setPhoneNumber("0743211122");
         userDTO.setPassword("BereGratis");
+        when(userPersistanceMock.getUserByEmail2(any(String.class))).thenReturn(Optional.empty());
         try {
             UserDTO createdUser = userManagementMock.createUser(userDTO);
             assertEquals(userDTO.getFirstName(), createdUser.getFirstName());
