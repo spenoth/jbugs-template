@@ -47,6 +47,11 @@ public class UserManagementBean implements UserManagement {
         return UserDTOHelper.fromEntity(user);
     }
 
+    /**
+     * Validates user parameters before persisting.
+     * @param userDTO - user to validate
+     * @throws BuisnissException if validation fails
+     */
     private void validateUserForCreation(UserDTO userDTO) throws BuisnissException {
         if (!isUserValidForCreation(userDTO) || !isValidEmail(userDTO.getEmail()) || !isValidPhoneNumber(userDTO.getPhoneNumber())) {
             throw new BuisnissException(ExceptionCode.USER_VALIDATION_EXCEPTION);
@@ -57,6 +62,10 @@ public class UserManagementBean implements UserManagement {
         }
     }
 
+    /**
+     * Trims down whitespaces from users first and lastname
+     * @param userDTO - the user whoms first and last name must by trimmed
+     */
     private void normalizeUserDTO(UserDTO userDTO) {
         userDTO.setFirstName(userDTO.getFirstName().trim());
         userDTO.setLastName(userDTO.getLastName().trim());
@@ -66,8 +75,8 @@ public class UserManagementBean implements UserManagement {
      * Creates a suffix for the username, if the username already exists. The suffix consists
      * of a number.
      *
-     * @param username
-     * @return
+     * @param username - the username that has to be appended with the suffix
+     * @return the suffix
      */
     protected String createSuffix(String username) {
         List<String> usernameLike = userPersistance.getUsernamesLike(username);
@@ -80,6 +89,13 @@ public class UserManagementBean implements UserManagement {
         return max.map(Object::toString).orElse("");
     }
 
+    /**
+     * Generate a username candidate from the users first and lastname. This might not be a final
+     * username.
+     * @param firstName - first name of the user
+     * @param lastName - last name of the user
+     * @return a username candidate
+     */
     protected String geneateUsername(@NotNull final String firstName, @NotNull final String lastName) {
         StringBuilder username = new StringBuilder();
 
@@ -97,18 +113,34 @@ public class UserManagementBean implements UserManagement {
         return username.toString().toLowerCase();
     }
 
+    /**
+     * Generate the full username from the first name, last name and a numeric suffix
+     * @param firstName - First name of the user
+     * @param lastName - Last name of the user
+     * @return the valid username
+     */
     private String generateFullUsername(String firstName, String lastName) {
         String prefix = geneateUsername(firstName, lastName);
         String suffix = createSuffix(prefix);
         return prefix + suffix;
     }
 
+    /**
+     * Check if all mandatory attributes of the are set.
+     * @param user - user that has to be validated
+     * @return true of the user object passes validates. False otherwise
+     */
     private boolean isUserValidForCreation(UserDTO user) {
         return user.getFirstName() != null && user.getLastName() != null &&
             user.getEmail() != null && user.getPassword() != null &&
             user.getPhoneNumber() != null;
     }
 
+    /**
+     * Check if email has a valid format
+     * @param email - email to check
+     * @return true if email is formatted correctly. False otherwise.
+     */
     private boolean isValidEmail(String email){
         final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@msggroup.com$", Pattern.CASE_INSENSITIVE);
@@ -116,6 +148,11 @@ public class UserManagementBean implements UserManagement {
             return matcher.find();
     }
 
+    /**
+     * Check if phone numbers have a valid german or romanian format.
+     * @param phoneNumber - phonenumber to check
+     * @return true if phone number is formatted correctly. False otherwise.
+     */
     protected boolean isValidPhoneNumber(String phoneNumber) {
         // TODO: To be continued ... /^0[\d]{3}-[\d]{3}-[\d]{3}$/
 //       final Pattern VALID_GERMANY_PHONE_REGEX =
