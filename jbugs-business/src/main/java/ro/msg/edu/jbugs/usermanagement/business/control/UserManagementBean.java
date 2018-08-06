@@ -2,7 +2,7 @@ package ro.msg.edu.jbugs.usermanagement.business.control;
 
 import ro.msg.edu.jbugs.usermanagement.business.exception.BuisnissException;
 import ro.msg.edu.jbugs.usermanagement.business.exception.ExceptionCode;
-import ro.msg.edu.jbugs.usermanagement.persistance.dao.UserPersistanceManagement;
+import ro.msg.edu.jbugs.usermanagement.persistance.dao.UserManagementImpl;
 import ro.msg.edu.jbugs.usermanagement.persistance.entity.User;
 import ro.msg.edu.jbugs.usermanagement.business.dto.UserDTO;
 import ro.msg.edu.jbugs.usermanagement.business.dto.UserDTOHelper;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class UserManagementBean implements UserManagement {
 
     @EJB
-    UserPersistanceManagement userPersistance;
+    UserManagementImpl userPersistance;
 
     private static final int MAX_LAST_NAME_LENGTH = 5;
     private static final int MIN_USERNAME_LENGTH = 6;
@@ -52,7 +52,7 @@ public class UserManagementBean implements UserManagement {
             throw new BuisnissException(ExceptionCode.USER_VALIDATION_EXCEPTION);
         }
         // Validate if email already exists.
-        if (userPersistance.getUserByEmail2(userDTO.getEmail()).isPresent()) {
+        if (userPersistance.getUserByEmail(userDTO.getEmail()).isPresent()) {
             throw new BuisnissException(ExceptionCode.EMAIL_EXISTS_ALLREADY);
         }
     }
@@ -129,17 +129,25 @@ public class UserManagementBean implements UserManagement {
     }
 
     @Override
-    public void deactivateUser(String username) {
-        User user = userPersistance.getUserByUsername(username);
-        user.setStatus(false);
-        userPersistance.updateUser(user);
+    public void deactivateUser(String username) throws BuisnissException {
+        Optional<User> userOpt = userPersistance.getUserByUsername(username);
+        if (userOpt.isPresent()) {
+            userOpt.get().setStatus(false);
+            userPersistance.updateUser(userOpt.get());
+        } else {
+            throw new BuisnissException(ExceptionCode.USERNAME_NOT_VALID);
+        }
     }
 
     @Override
-    public void activateUser(String username) {
-        User user = userPersistance.getUserByUsername(username);
-        user.setStatus(true);
-        userPersistance.updateUser(user);
+    public void activateUser(String username) throws BuisnissException {
+        Optional<User> userOpt = userPersistance.getUserByUsername(username);
+        if (userOpt.isPresent()) {
+            userOpt.get().setStatus(true);
+            userPersistance.updateUser(userOpt.get());
+        } else {
+            throw new BuisnissException(ExceptionCode.USERNAME_NOT_VALID);
+        }
     }
 
     @Override
@@ -154,13 +162,13 @@ public class UserManagementBean implements UserManagement {
 
     @Override
     public UserDTO login(String username, String password) throws BuisnissException {
-        User user = userPersistance.getUserByUsername(username);
-        if(user == null)
+        Optional<User> userOpt = userPersistance.getUserByUsername(username);
+        if(!userOpt.isPresent())
             throw new BuisnissException(ExceptionCode.USERNAME_NOT_VALID);
-        if(!Encryptor.encrypt(password).equals(user.getPassword())) {
+        if(!Encryptor.encrypt(password).equals(userOpt.get().getPassword())) {
             throw new BuisnissException(ExceptionCode.PASSWORD_NOT_VALID);
         }
 
-        return UserDTOHelper.fromEntity(user);
+        return UserDTOHelper.fromEntity(userOpt.get());
     }
 }

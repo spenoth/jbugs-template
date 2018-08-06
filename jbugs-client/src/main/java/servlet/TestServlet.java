@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import ro.msg.edu.jbugs.usermanagement.business.control.UserManagement;
 import ro.msg.edu.jbugs.usermanagement.business.exception.BuisnissException;
 import ro.msg.edu.jbugs.usermanagement.persistance.dao.PermissionManagement;
-import ro.msg.edu.jbugs.usermanagement.persistance.dao.UserPersistanceManagement;
+import ro.msg.edu.jbugs.usermanagement.persistance.dao.UserManagementImpl;
 import ro.msg.edu.jbugs.usermanagement.persistance.entity.Permission;
 import ro.msg.edu.jbugs.usermanagement.persistance.entity.Role;
 import ro.msg.edu.jbugs.usermanagement.business.dto.UserDTO;
@@ -30,7 +30,7 @@ public class TestServlet extends HttpServlet {
 	private PermissionManagement permissionManagement;
 
 	@EJB
-	private UserPersistanceManagement userManagement;
+	private UserManagementImpl userManagement;
 
 	@EJB
     private UserManagement userManagementBean;

@@ -6,10 +6,16 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "roles")
+@NamedQueries(
+        {
+                @NamedQuery(name = Role.GET_ALL_ROLES, query = "SELECT r from Role r")
+        }
+)
 public class Role extends BaseEntity<Long> {
 
     @Transient
     private final static int MAX_STRING_LENGTH = 20;
+    public static final String GET_ALL_ROLES = "GET_ALL_ROLES";
 
     @Column(name = "type", length = MAX_STRING_LENGTH)
     private String type;

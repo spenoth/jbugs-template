@@ -15,28 +15,28 @@ public interface UserManagement {
     UserDTO createUser(UserDTO userDTO) throws BuisnissException;
 
     /**
-     *
-     * @param username
+     * Find the user with the username and set it's status to false
+     * @param username user's username for the search criteria
      */
-    void deactivateUser(String username);
+    void deactivateUser(String username) throws BuisnissException;
 
     /**
-     *
-     * @param username
+     * Find the user with the username and set it's status to true
+     * @param username user's username for the search criteria
      */
-    void activateUser(String username);
+    void activateUser(String username) throws BuisnissException;
 
     /**
-     *
-     * @return
+     * Retrieve all users.
+     * @return a list of users
      */
     List<UserDTO> getAllUsers();
 
     /**
-     *
-     * @param username
-     * @param password
-     * @return
+     * Login the user with the provided credentials
+     * @param username - usarname to login with
+     * @param password - password to login with
+     * @return the user on succsessfull login. Throw an exception on onvalid username or password
      */
     UserDTO login(String username, String password) throws BuisnissException;
 

@@ -2,7 +2,7 @@ package ro.msg.edu.jbugs.usermanagement.business.control;
 
 import ro.msg.edu.jbugs.usermanagement.business.exception.BuisnissException;
 import ro.msg.edu.jbugs.usermanagement.business.exception.ExceptionCode;
-import ro.msg.edu.jbugs.usermanagement.persistance.dao.UserPersistanceManagement;
+import ro.msg.edu.jbugs.usermanagement.persistance.dao.UserManagementImpl;
 import ro.msg.edu.jbugs.usermanagement.persistance.entity.User;
 import ro.msg.edu.jbugs.usermanagement.business.dto.UserDTO;
 import ro.msg.edu.jbugs.usermanagement.business.utils.Encryptor;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 public class UserManagementBeanTest {
 
     @Mock
-    UserPersistanceManagement userPersistanceMock;
+    UserManagementImpl userPersistanceMock;
 
     @InjectMocks
     UserManagementBean userManagementMock;
@@ -94,7 +94,7 @@ public class UserManagementBeanTest {
     @Test
     public void testLogin_WrongUsername() {
         when(userPersistanceMock.getUserByUsername(any(String.class)))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
         try {
             userManagementMock.login("a", "s");
             fail("Shouldn't reach this point!");
@@ -109,7 +109,7 @@ public class UserManagementBeanTest {
         when(user.getUsername()).thenReturn("salut");
 
         when(userPersistanceMock.getUserByUsername(any(String.class)))
-                .thenReturn(user);
+                .thenReturn(Optional.of(user));
         try {
             userManagementMock.login("salut", "s");
             fail("Shouldn't reach this point!");
@@ -125,7 +125,7 @@ public class UserManagementBeanTest {
         when(user.getPassword()).thenReturn(Encryptor.encrypt("secret"));
 
         when(userPersistanceMock.getUserByUsername(any(String.class)))
-                .thenReturn(user);
+                .thenReturn(Optional.of(user));
         try {
             UserDTO userDTO = userManagementMock.login("salut", "secret");
             assertEquals(userDTO.getUsername(),user.getUsername());
@@ -205,7 +205,7 @@ public class UserManagementBeanTest {
         userDTO.setEmail("dinamo@msggroup.com");
         userDTO.setPhoneNumber("0743211122");
         userDTO.setPassword("BereGratis");
-        when(userPersistanceMock.getUserByEmail2(any(String.class))).thenReturn(Optional.empty());
+        when(userPersistanceMock.getUserByEmail(any(String.class))).thenReturn(Optional.empty());
         try {
             UserDTO createdUser = userManagementMock.createUser(userDTO);
             assertEquals(userDTO.getFirstName(), createdUser.getFirstName());

@@ -8,12 +8,23 @@ import java.util.Objects;
 @Entity
 @Table(name = "users")
 @NamedQueries(
-        {@NamedQuery(name="get_All_Users", query = "SELECT u from User u")}
+        {
+                @NamedQuery(name= User.GET_ALL_USERS, query = "SELECT u from User u"),
+                @NamedQuery(name= User.GET_USER_BY_USERNAME, query = "SELECT u FROM User u where u.username=:username"),
+                @NamedQuery(name= User.GET_USER_BY_EMAIL, query = "SELECT u FROM User u where u.email =:email"),
+                @NamedQuery(name= User.GET_USERNAMES_LIKE, query = "SELECT U.username FROM User u WHERE u.username LIKE :username ORDER BY u.username DESC")
+
+        }
 )
 public class User extends BaseEntity<Long> {
 
     @Transient
     private final static int MAX_STRING_LENGTH = 40;
+
+    public static final String GET_ALL_USERS = "GET_ALL_USERS";
+    public static final String GET_USER_BY_USERNAME = "GET_USER_BY_USERNAME";
+    public static final String GET_USER_BY_EMAIL = "GET_USER_BY_EMAIL";
+    public static final String GET_USERNAMES_LIKE = "GET_USERNAMES_LIKE";
 
     @Column(name = "firstName", length = MAX_STRING_LENGTH, nullable = false)
     private String firstName;
