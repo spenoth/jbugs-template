@@ -13,6 +13,13 @@ import java.util.Objects;
 )
 public class Role extends BaseEntity<Long> {
 
+    public enum Type {
+        ADMINISTRATOR,
+        PROJECT_MANAGER,
+        TEST_MANAGER,
+        DEVELOPER,
+        TESTER;
+    }
     @Transient
     private final static int MAX_STRING_LENGTH = 20;
     public static final String GET_ALL_ROLES = "GET_ALL_ROLES";
