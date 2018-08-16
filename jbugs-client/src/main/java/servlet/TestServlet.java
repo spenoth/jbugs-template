@@ -130,8 +130,8 @@ public class TestServlet extends HttpServlet {
         dto1.setFirstName("Ion");
         dto1.setLastName("Ion");
         dto1.setPassword("passwd");
-        dto1.setEmail("asdaf@msggroup.com");
-        dto1.setPhoneNumber("0431223444");
+        dto1.setEmail("asdaf1@msggroup.com");
+        dto1.setPhoneNumber("0745896564");
 
         UserDTO persistentuserdto = null;
         try {
@@ -145,8 +145,8 @@ public class TestServlet extends HttpServlet {
         dto2.setFirstName("Ion");
         dto2.setLastName("Ion");
         dto2.setPassword("passwd");
-        dto2.setEmail("asdaaaf@msggroup.com");
-        dto2.setPhoneNumber("0431223444");
+        dto2.setEmail("asdaaaf2@msggroup.com");
+        dto2.setPhoneNumber("0745896561");
 
         try {
             userManagementBean.createUser(dto2);
@@ -156,10 +156,10 @@ public class TestServlet extends HttpServlet {
 
         UserDTO dto3 = new UserDTO();
         dto3.setFirstName("Ion");
-        dto3.setLastName("Ion");
+        dto3.setLastName("Ionica");
         dto3.setPassword("passwd");
-        dto3.setEmail("asdabaf@msggroup.com");
-        dto3.setPhoneNumber("0431223444");
+        dto3.setEmail("asdabaf3@msggroup.com");
+        dto3.setPhoneNumber("0745896563");
 
 
         try {
@@ -169,8 +169,8 @@ public class TestServlet extends HttpServlet {
         }
 
         UserDTO dto4 = new UserDTO();
-        dto4.setFirstName("Ion");
-        dto4.setLastName("Ion");
+        dto4.setFirstName("John");
+        dto4.setLastName("Doe");
         dto4.setPassword("passwd");
         dto4.setEmail("forth@msggroup.com");
         dto4.setPhoneNumber("0123432192");

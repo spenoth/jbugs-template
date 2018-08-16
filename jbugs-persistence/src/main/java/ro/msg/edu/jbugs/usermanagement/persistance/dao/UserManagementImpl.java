@@ -53,7 +53,7 @@ public class UserManagementImpl /*implements Serializable */{
      *  the query didn't return any result.
      */
     public Optional<User> getUserByUsername(@NotNull String username) {
-        TypedQuery<User> q = em.createQuery(User.GET_USER_BY_USERNAME, User.class);
+        TypedQuery<User> q = em.createNamedQuery(User.GET_USER_BY_USERNAME, User.class);
         q.setParameter("username",username);
         try {
             return Optional.of(q.getSingleResult());

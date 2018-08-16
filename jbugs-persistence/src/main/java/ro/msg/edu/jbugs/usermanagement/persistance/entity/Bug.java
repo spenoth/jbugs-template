@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name="bug")
+@Table(name="bugs")
 public class Bug extends BaseEntity<Long> {
 
     public enum Status {
@@ -50,13 +50,13 @@ public class Bug extends BaseEntity<Long> {
     @Column(name = "fixedVersion", length = MAX_STRING_LENGTH, nullable = false)
     private String fixedVersion;
 
-    @ManyToOne(optional = false)
-    @Column(name = "createdBy", nullable = false)
-    private User createdBy;
+//    @ManyToOne(optional = false)
+//    @Column(name = "createdBy", nullable = false)
+//    private User createdBy;
 
-    @ManyToOne(optional = false)
-    @Column(name = "createdBy", nullable = false)
-    private User assignedTos;
+//    @ManyToOne(optional = false)
+//    @Column(name = "createdBy", nullable = false)
+//    private User assignedTos;
 
 
 
